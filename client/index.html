@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket Demo</title>
+  </head>
+  <body>
+    <h1>WebSocket Client</h1>
+    <input type="text" id="name" placeholder="Név">
+    <button type="button" id="login">Bejelentkezés</button>
+    <button type="button" id="logout">Kijelentkezés</button>
+
+    <br><br>
+    <input type="text"  id="message">
+    <button type="button" id="send">Küldés</button>
+
+    <br><br>
+    <select id="userlist" ></select>
+    <input type="text" id="message2">
+    <button type="button" id="send2">Küldés</button>
+
+    <br><br>
+    <div id="messages"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
