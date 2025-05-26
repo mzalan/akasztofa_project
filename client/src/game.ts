@@ -12,5 +12,6 @@ const alphabet = [
 alphabet.forEach(letter => {
     let button = document.createElement("button") as HTMLButtonElement;
     button.innerText = letter;
-    alphabetDiv.append(button);
+    alphabetDiv.appendChild(button);
+    console.log("ffef");
 })
