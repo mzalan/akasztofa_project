@@ -6,7 +6,7 @@ let id:number
 let users: {userId:number,userName:string}[] = []
 
 const connection = () =>{
-  ws = new WebSocket('ws://193.225.219.202:8081');
+  ws = new WebSocket('ws://193.225.219.33:8081');
 
   ws.onopen = () =>{
     console.log('Connected to server');

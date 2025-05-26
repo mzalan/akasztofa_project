@@ -2,7 +2,7 @@ import { WebSocketServer } from "ws";
 
 const server = new WebSocketServer({
     port:8081,
-    host: '193.225.219.202'
+    host: '193.225.219.33'
 })
 
 let clientId = 0
