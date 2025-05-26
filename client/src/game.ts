@@ -10,8 +10,7 @@ const alphabet = [
   ];
 
 alphabet.forEach(letter => {
-    let button = document.createElement("button") as HTMLButtonElement;
+    let button = document.createElement("a") as HTMLAnchorElement;
     button.innerText = letter;
     alphabetDiv.appendChild(button);
-    console.log("ffef");
 })

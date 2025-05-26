@@ -5,12 +5,12 @@
     width: 36px;
     text-align: center;
 }
-.alphabet-container button {
+#alphabet-container a {
     padding: 10px;
     background-color: gray;
     margin: 5px;
     color: black;
     font-size:28px;
-    width:28px;
+    width:px;
     text-align: center;
 }
