@@ -1,88 +1,25 @@
-import { WebSocketServer } from "ws";
+// server/index.js
+const WebSocket = require('ws');
 
-const server = new WebSocketServer({
-    port:8081,
-    host: '193.225.219.33'
-})
+const wss = new WebSocket.Server({ port: 3000 });
+console.log("WebSocket server running on ws://localhost:3000");
 
-let clientId = 0
-const clients = []
+const players = [];
+wss.on('connection', (ws) => {
+  console.log('Client connected');
 
-server.on('connection', (socket)=>{
-    console.log('Client connect');
-    
-    socket.on('message', (message, isBinary) =>{
-        const msg = JSON.parse(message)
-        console.log(msg);
-        if (msg.type == 'init'){
-            clientId++
-            clients.push({
-                'socket' : socket,
-                'userId' : clientId,
-                'userName': msg.userName
-            })
-            console.log(clients);
-            socket.send(JSON.stringify({
-                type:'init',
-                userId: clientId
-            }))
-            let userList = []
-            clients.forEach(client =>{
-                userList.push(
-                    {
-                        userId: client.userId,
-                        userName: client.userName
-                    }
-                )
-            })
-            clients.forEach(client =>{
-                client.socket.send(
-                    JSON.stringify(
-                        {
-                            type:'userlist',
-                            userList
-                        }
-                    )
-                )
-            })
-        }
-        if (msg.type == 'disconnect'){
-            const index = clients.findIndex(client => client.userId==msg.userId)
-            clients[index].socket.close() // kapcsolat botás -> "close" esemény, mindkét oldal
-           
-        }
-        if (msg.type == 'message'){
-            clients.forEach(client =>{
-                client.socket.send(message, {binary: isBinary})
-            })
-        }
-        if (msg.type == 'private-message'){
-            const client = clients.find(client => client.userId == msg.to)
-            if (client){
-                msg.type='message'
-                client.socket.send(JSON.stringify(msg))
-            } else {
-                console.log('Client not found!');
-                
-            }
-        }
-    })
-})
+  players.forEach(player => ws.send(player));
+  ws.on('message', (player) => {
+    console.log('Received:', message.toString());
+    players.push(player);
 
-server.on('close', ()=>{
-    const index = clients.findIndex(client => client.userId==msg.userId)
-    clients.splice(index,1)
-    console.log(clients);
-})
+    // Broadcast to all clients
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message.toString());
+      }
+    });
+  });
 
-server.on('error',(error)=>{ 
-    console.log(error.message);
-   
-    
-})
-
-console.log('Websocket server is running on ws:\\localhost:8081');
-
-// npx nodemon index.js
-
-// node index.js ->kész program
+  ws.on('close', () => console.log('Client disconnected'));
+});

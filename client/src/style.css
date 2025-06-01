@@ -14,3 +14,6 @@
     width:px;
     text-align: center;
 }
+.players {
+  display: none;
+}

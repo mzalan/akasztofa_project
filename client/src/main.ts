@@ -1,91 +1,39 @@
-import IMessageProtocol from './IMessageProtocol';
-import './style.css'
 
-let ws: WebSocket
-let id:number
-let users: {userId:number,userName:string}[] = []
 
-const connection = () =>{
-  ws = new WebSocket('ws://193.225.219.33:8081');
+const socket = new WebSocket("ws://localhost:3000");
 
-  ws.onopen = () =>{
-    console.log('Connected to server');
-    const msg: IMessageProtocol = {
-      type:'init',
-      userId:0,
-      userName: (document.querySelector('#name') as HTMLInputElement).value
-    }
-    ws.send(JSON.stringify(msg))
-  }
+socket.onopen = () => {
+  console.log("Connected to WebSocket server");
+};
 
-  ws.onmessage = (event) =>{
-     console.log(event);
-    const msg: IMessageProtocol = JSON.parse(event.data)
-    console.log(msg);
+let players:string[] = []; 
 
-    if (msg.type == 'init'){
-      id = msg.userId
-    }
-    if (msg.type=='message') {
-      const messages = document.querySelector('#messages') as HTMLDivElement
-      const newMessage = document.createElement('p')
-      newMessage.textContent = `Küldő: ${msg.userName}, Üzenet: ${msg.text}`
-      messages.append(newMessage)
-    }
-    if (msg.type == 'userlist'){
-      console.log(msg.userList);
+socket.onmessage = (event) => {
+  players.push(event.data);
+  console.log(players);
+  players.forEach(msg => {
+    let div = document.createElement("div") as HTMLDivElement;
+    div.innerText = msg;
+    playersDiv.appendChild(div);
+  });
+};
 
-      users = msg.userList || []
-      const select = document.querySelector('#userlist') as HTMLSelectElement
-      select.innerHTML=''
-      users.forEach(u=>{
-        const option = document.createElement('option')
-        option.value = u.userId.toString()
-        option.innerText = u.userName
-        select.append(option)
-      })
-    }
-  }
 
-  ws.onclose = () =>{
-    console.log('Disconnect from server');
-    
-  }
+const nameInput = document.getElementById("name_input") as HTMLInputElement;
+const playersDiv = document.getElementById("players") as HTMLDivElement;
+const jointBtn = document.getElementById("join_btn") as HTMLAnchorElement;
+const h1 = document.getElementById('h1') as HTMLHeadingElement;
+const hName = document.getElementById('h_name') as HTMLHeadingElement;
+const hAvatar = document.getElementById('h_avatar') as HTMLHeadingElement;
+const inpAvatar = document.getElementById('inp_avatar') as HTMLInputElement;
 
-}
-
-(document.querySelector('#login') as HTMLButtonElement).addEventListener('click',()=>{
-  connection()
+document.getElementById("join_btn")?.addEventListener('click', () => {
+  socket.send(nameInput.value);
+  jointBtn.style.display = "none";
+  nameInput.style.display = "none";
+  h1.style.display = "none";
+  hName.style.display = "none";
+  hAvatar.style.display = "none";
+  inpAvatar.style.display = "none";
+  playersDiv.style.display = "block";
 });
-
-(document.querySelector('#logout') as HTMLButtonElement).addEventListener('click',()=>{
-  const msg: IMessageProtocol = {
-    type:'disconnect',
-    userId:id,
-  }
-  ws.send(JSON.stringify(msg))
-});
-
-(document.querySelector('#send') as HTMLButtonElement).addEventListener('click',()=>{
-  const msg: IMessageProtocol = {
-    type:'message',
-    userId:id,
-    userName:(document.querySelector('#name') as HTMLInputElement).value,
-    text: (document.querySelector('#message') as HTMLInputElement).value,
-  }
-  ws.send(JSON.stringify(msg));
-  (document.querySelector('#message') as HTMLInputElement).value = ''
-});
-
-(document.querySelector('#send2') as HTMLButtonElement).addEventListener('click',()=>{
-  const inputMessage = document.querySelector('#message2') as HTMLInputElement
-  const msg: IMessageProtocol = {
-    type:'private-message',
-    userId: id,
-    userName: (document.querySelector('#name') as HTMLInputElement).value,
-    text: inputMessage.value,
-    to: Number( (document.querySelector('#userlist') as HTMLSelectElement).value )
-  }
-  ws.send(JSON.stringify(msg))
-  inputMessage.value=''
-})
